@@ -32,7 +32,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         TODO
         """
         min_mass, max_mass = min(self.sim.model.body_mass[1:]), max(self.sim.model.body_mass[1:])
-        masses = [np.random.uniform(min_mass, max_mass) for _ in range(4)]
+        masses = [np.random.uniform(min_mass, max_mass) for _ in range(3)]
         #mu, sigma = self.sim.model.body_mass[1:].sum()/self.sim.model.body_mass[1:].size, 1.5 # mean and standard deviation
         # print("mu", mu)
         #s = np.random.normal(mu, sigma, (1, 4))
@@ -41,7 +41,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def get_parameters(self):
         """Get value of mass for each link"""
-        masses = np.array( self.sim.model.body_mass[1:] )
+        masses = np.array( self.sim.model.body_mass[2:] )
         return masses
 
     def set_parameters(self, task):
