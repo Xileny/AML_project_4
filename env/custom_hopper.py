@@ -47,7 +47,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
     def set_parameters(self, task):
         """Set each hopper link's mass to a new value"""
         #print("Set paramteres fn: ", task)
-        self.sim.model.body_mass[1:] = task
+        self.sim.model.body_mass[2:] = task
 
     def step(self, a):
         """Step the simulation to the next timestep
