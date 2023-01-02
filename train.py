@@ -14,6 +14,7 @@ from stable_baselines3.common.monitor import Monitor
 def main():
     env = gym.make('CustomHopper-source-v0')
     #env2 = gym.make('CustomHopper-target-v0')
+    target_env = gym.make('CustomHopper-target-v0')
     #check_env(env)
 
     """ print('State space:', env.observation_space)  # state-space
@@ -48,19 +49,35 @@ def main():
     modelSAC.learn(total_timesteps=25000, log_interval=4)
     modelSAC.save("SAC 25K timesteps") """
 
-    modelPPO = PPO.load("PPO lr_3e-5 100K timesteps")
+    modelPPO = PPO.load("./PPO/PPO 50K timesteps")
     env1 = Monitor(env)
-    # Testa la policy sull'ambiente sorgente
+    # Test the policy on the source env
     mean_reward, std_reward = evaluate_policy(modelPPO, env1)
     print(f"Mean reward on source environment using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
 
-    obs = env.reset()
-    while True:
-        action, _states = modelPPO.predict(obs)
-        obs, rewards, dones, info = env.step(action)
+    # Initialize the total reward and the episode counter
+    total_reward = 0
+    n_episodes = 0
+    # Initialize the test environment state
+    state = env.reset()
+    #state = target_env.reset()
+    while n_episodes < 50:
+        # Execute an action 
+        action, _states = modelPPO.predict(state)
+        state, reward, done, _info = env.step(action)
         env.render()
-        if dones:
-            obs = env.reset()
+        # Add the obtained reward to the total reward
+        total_reward += reward
+        # Increment the episode counter
+        #print(f"Episode {n_episodes}, obtained reward: {reward}")
+        n_episodes += 1
+        # If the episode is done, re-initialize the test environment state
+        if done:
+            state = env.reset()
+
+    #Compute the average reward
+    average_reward = total_reward / n_episodes
+    print(f"Average reward over {n_episodes} episodes: {average_reward:.2f}")
 
     """ modelTRPO = TRPO.load("TRPO lr_3e-4 10K timesteps")
     env2 = Monitor(env)
