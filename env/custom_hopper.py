@@ -10,10 +10,16 @@ from gym import utils
 from .mujoco_env import MujocoEnv
 from scipy.stats import truncnorm
 
+
 class CustomHopper(MujocoEnv, utils.EzPickle):
+    
+
     def __init__(self, domain=None):
         MujocoEnv.__init__(self, 4)
         utils.EzPickle.__init__(self)
+
+        self.i = 0
+        self.udr = False
 
         self.original_masses = np.copy(self.sim.model.body_mass[1:])    # Default link masses
 
@@ -25,14 +31,20 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         """Set random masses
         TODO
         """
+        #print(f"\nCall set_random_parameters()!\n")
         self.set_parameters(self.sample_parameters())
 
     def sample_parameters(self):
         """Sample masses according to a domain randomization distribution
         TODO
         """
-        min_mass, max_mass = min(self.sim.model.body_mass[1:]), max(self.sim.model.body_mass[1:])
+        ############## UNIFORM DISTRIBUTION ##############
+        #### Is it correct to consider as ends the min and the max values of self.original_masses?
+        min_mass, max_mass = min(self.original_masses[1:]), max(self.original_masses[1:])
         masses = [np.random.uniform(min_mass, max_mass) for _ in range(3)]
+
+        ############## NORMAL DISTRIBUTION ##############
+        #### Is it correct to compute mu and sigma this way?
         #mu, sigma = self.sim.model.body_mass[1:].sum()/self.sim.model.body_mass[1:].size, 1.5 # mean and standard deviation
         # print("mu", mu)
         #s = np.random.normal(mu, sigma, (1, 4))
@@ -48,6 +60,9 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         """Set each hopper link's mass to a new value"""
         #print("Set paramteres fn: ", task)
         self.sim.model.body_mass[2:] = task
+
+    def set_udr_flag(self, val=True):
+        self.udr = val
 
     def step(self, a):
         """Step the simulation to the next timestep
@@ -79,6 +94,15 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def reset_model(self):
         """Reset the environment to a random initial state"""
+
+        if self.udr:
+            print(f"Masses BEFORE: {self.sim.model.body_mass[2:]}")
+            ######### Is it correct to sample masses here? This method should be called after each episode
+            self.set_random_parameters()
+            #print(f"Call no. {self.i}!\n")
+            print(f"Masses AFTER: {self.sim.model.body_mass[2:]}\n")
+            self.i += 1
+
         qpos = self.init_qpos + self.np_random.uniform(low=-.005, high=.005, size=self.model.nq)
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
         self.set_state(qpos, qvel)
