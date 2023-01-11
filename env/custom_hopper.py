@@ -18,8 +18,9 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         MujocoEnv.__init__(self, 4)
         utils.EzPickle.__init__(self)
 
-        self.i = 0
         self.udr = False
+        self.percentage_mass_variability = 10
+        self.masses_ranges = []
 
         self.original_masses = np.copy(self.sim.model.body_mass[1:])    # Default link masses
 
@@ -39,16 +40,32 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         TODO
         """
         ############## UNIFORM DISTRIBUTION ##############
-        #### Is it correct to consider as ends the min and the max values of self.original_masses?
-        min_mass, max_mass = min(self.original_masses[1:]), max(self.original_masses[1:])
-        masses = [np.random.uniform(min_mass, max_mass) for _ in range(3)]
+        #### Is it correct to consider as ends the min and the max values of self.original_masses? It is a curious way but it should be ok
+        #### Anyway, try to apply to every single mass a uniform distribution considering the mass itself as the mean in the range
+        #min_mass, max_mass = min(self.original_masses[1:]), max(self.original_masses[1:]) 
+        masses= [] 
+        #print("Original parameters: ", self.original_masses[1:])
+        if(self.percentage_mass_variability > 99):
+            self.percentage_mass_variability = 99
 
-        ############## NORMAL DISTRIBUTION ##############
-        #### Is it correct to compute mu and sigma this way?
-        #mu, sigma = self.sim.model.body_mass[1:].sum()/self.sim.model.body_mass[1:].size, 1.5 # mean and standard deviation
-        # print("mu", mu)
-        #s = np.random.normal(mu, sigma, (1, 4))
-        #print("Sample paramteres fn: ", masses)
+        if len(self.masses_ranges) == 0:
+            i = 0
+            for mass in self.original_masses[1:]:
+                min_mass, max_mass = mass-(mass*self.percentage_mass_variability/100), mass+(mass*self.percentage_mass_variability/100)
+                print(f"Range for mass {i+1}: [{min_mass:.3f}, {max_mass:.3f})")
+                i += 1
+                interval = [min_mass, max_mass]
+                self.masses_ranges.append(interval)
+                #print(f"self.masses_ranges: {self.masses_ranges}")
+                #print(f"Min and max masses: {min_mass} and {max_mass} considering mass {mass}")
+                
+        for interval in self.masses_ranges:
+            sampled_mass = np.random.uniform(interval[0], interval[1])
+            masses.append(sampled_mass)
+            
+        #print("sample_parameters fn: ", masses)
+        #print("Body masses BEFORE: ", self.sim.model.body_mass)
+
         return masses
 
     def get_parameters(self):
@@ -58,11 +75,16 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def set_parameters(self, task):
         """Set each hopper link's mass to a new value"""
-        #print("Set paramteres fn: ", task)
+        #print("set_paramteres fn: ", task)
         self.sim.model.body_mass[2:] = task
+        #print("Body masses AFTER: ", self.sim.model.body_mass)
 
-    def set_udr_flag(self, val=True):
+    def set_udr_flag(self, val=True, percentage_variability = 10):
         self.udr = val
+        self.percentage_mass_variability = percentage_variability
+    
+    def reset_masses_ranges(self):
+        self.masses_ranges = []
 
     def step(self, a):
         """Step the simulation to the next timestep
@@ -96,12 +118,10 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         """Reset the environment to a random initial state"""
 
         if self.udr:
-            print(f"Masses BEFORE: {self.sim.model.body_mass[2:]}")
-            ######### Is it correct to sample masses here? This method should be called after each episode
+            #print(f"Masses BEFORE: {self.sim.model.body_mass[2:]}")
+            ######### Is it correct to sample masses here? This method should be called after each episode --> YES
             self.set_random_parameters()
-            #print(f"Call no. {self.i}!\n")
-            print(f"Masses AFTER: {self.sim.model.body_mass[2:]}\n")
-            self.i += 1
+            #print(f"Masses AFTER: {self.sim.model.body_mass[2:]}\n")
 
         qpos = self.init_qpos + self.np_random.uniform(low=-.005, high=.005, size=self.model.nq)
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
