@@ -100,71 +100,71 @@ def main():
     ############ DOMAIN RANDOMIZATION - STEP 3 ############
 
     #### training phase
-    source_env.set_udr_flag(True, 10)
+    source_env.set_udr_flag(True, 40)
     #TRPO Policy
     modelTRPO = TRPO("MlpPolicy", source_env)
     #modelTRPO = TRPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0003)
     modelTRPO.learn(total_timesteps=500_000, progress_bar=True)
     source_env.set_udr_flag(False) 
-    modelTRPO.save(f"./TRPO/TRPO with_udr 10percentage 500K timesteps")
+    modelTRPO.save(f"./TRPO/TRPO with_udr 40percentage 500K timesteps")
     #modelTRPO = TRPO.load("./TRPO/TRPO with_udr 200K timesteps")
 
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 10percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 40percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 10percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 40percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges()
 
-    source_env.set_udr_flag(True, 20)
+    """ source_env.set_udr_flag(True, 50)
     #TRPO Policy
     modelTRPO = TRPO("MlpPolicy", source_env)
     #modelTRPO = TRPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0003)
     modelTRPO.learn(total_timesteps=500_000, progress_bar=True)
     source_env.set_udr_flag(False) 
-    modelTRPO.save(f"./TRPO/TRPO with_udr 20percentage 500K timesteps")
+    modelTRPO.save(f"./TRPO/TRPO with_udr 50percentage 500K timesteps")
     #modelTRPO = TRPO.load("./TRPO/TRPO with_udr 200K timesteps")
 
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 20percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 50percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 20percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
+    print(f"\nMean reward after 500K timesteps and 50percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    source_env.reset_masses_ranges() """
 
-    source_env.set_udr_flag(True, 30)
+    source_env.set_udr_flag(True, 60)
     #TRPO Policy
     modelTRPO = TRPO("MlpPolicy", source_env)
     #modelTRPO = TRPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0003)
     modelTRPO.learn(total_timesteps=500_000, progress_bar=True)
     source_env.set_udr_flag(False) 
-    modelTRPO.save(f"./TRPO/TRPO with_udr 30percentage 500K timesteps")
+    modelTRPO.save(f"./TRPO/TRPO with_udr 60percentage 500K timesteps")
     #modelTRPO = TRPO.load("./TRPO/TRPO with_udr 200K timesteps")
 
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 30percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 60percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 30percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 60percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges()
 
-    source_env.set_udr_flag(True, 10)
+    source_env.set_udr_flag(True, 60)
     #TRPO Policy
     modelTRPO = TRPO("MlpPolicy", source_env)
     #modelTRPO = TRPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0003)
     modelTRPO.learn(total_timesteps=1_000_000, progress_bar=True)
     source_env.set_udr_flag(False) 
-    modelTRPO.save(f"./TRPO/TRPO with_udr 10percentage 1000K timesteps")
+    modelTRPO.save(f"./TRPO/TRPO with_udr 60percentage 1000K timesteps")
     #modelTRPO = TRPO.load("./TRPO/TRPO with_udr 200K timesteps")
 
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 10percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 1000K timesteps and 60percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 10percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 1000K timesteps and 60percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges()
 
-    source_env.set_udr_flag(True, 20)
+    """ source_env.set_udr_flag(True, 20)
     #TRPO Policy
     modelTRPO = TRPO("MlpPolicy", source_env)
     #modelTRPO = TRPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0003)
@@ -194,41 +194,41 @@ def main():
     print(f"\nMean reward after 1000K timesteps and 30percentage on source environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(target_env), episodes, render=False)
     print(f"\nMean reward after 1000K timesteps and 30percentage on target environment after applying UDR during training using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
+    source_env.reset_masses_ranges() """
 
-    source_env.set_udr_flag(True, 10)
+    source_env.set_udr_flag(True, 40)
     #PPO Policy
     modelPPO = PPO("MlpPolicy", source_env)
     #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
     modelPPO.learn(total_timesteps=500_000, progress_bar=True)
     source_env.set_udr_flag(False)
-    modelPPO.save("./PPO/PPO with_udr 10percentage 500K timesteps") 
+    modelPPO.save("./PPO/PPO with_udr 40percentage 500K timesteps") 
     #modelPPO = PPO.load("./PPO/PPO with_udr and uniform distrib 175K timesteps")
     
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 10percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 40percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 10percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 40percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges()
 
-    source_env.set_udr_flag(True, 20)
+    source_env.set_udr_flag(True, 60)
     #PPO Policy
     modelPPO = PPO("MlpPolicy", source_env)
     #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
     modelPPO.learn(total_timesteps=500_000, progress_bar=True)
     source_env.set_udr_flag(False)
-    modelPPO.save("./PPO/PPO with_udr 20percentage 500K timesteps") 
+    modelPPO.save("./PPO/PPO with_udr 60percentage 500K timesteps") 
     #modelPPO = PPO.load("./PPO/PPO with_udr and uniform distrib 175K timesteps")
     
     #### test phase
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 20percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 60percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 500K timesteps and 20percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    print(f"\nMean reward after 500K timesteps and 60percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges()
 
-    source_env.set_udr_flag(True, 30)
+    """ source_env.set_udr_flag(True, 30)
     #PPO Policy
     modelPPO = PPO("MlpPolicy", source_env)
     #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
@@ -242,9 +242,9 @@ def main():
     print(f"\nMean reward after 500K timesteps and 30percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
     print(f"\nMean reward after 500K timesteps and 30percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
+    source_env.reset_masses_ranges() """
 
-    source_env.set_udr_flag(True, 10)
+    """ source_env.set_udr_flag(True, 10)
     #PPO Policy
     modelPPO = PPO("MlpPolicy", source_env)
     #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
@@ -258,39 +258,7 @@ def main():
     print(f"\nMean reward after 1000K timesteps and 10percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
     print(f"\nMean reward after 1000K timesteps and 10percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
-
-    source_env.set_udr_flag(True, 20)
-    #PPO Policy
-    modelPPO = PPO("MlpPolicy", source_env)
-    #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
-    modelPPO.learn(total_timesteps=1_000_000, progress_bar=True)
-    source_env.set_udr_flag(False)
-    modelPPO.save("./PPO/PPO with_udr 20percentage 1000K timesteps") 
-    #modelPPO = PPO.load("./PPO/PPO with_udr and uniform distrib 175K timesteps")
-    
-    #### test phase
-    mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 20percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 20percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
-
-    source_env.set_udr_flag(True, 30)
-    #PPO Policy
-    modelPPO = PPO("MlpPolicy", source_env)
-    #modelPPO = PPO("MlpPolicy", source_env, verbose=1, learning_rate=0.0001)
-    modelPPO.learn(total_timesteps=1_000_000, progress_bar=True)
-    source_env.set_udr_flag(False)
-    modelPPO.save("./PPO/PPO with_udr 30percentage 1000K timesteps") 
-    #modelPPO = PPO.load("./PPO/PPO with_udr and uniform distrib 175K timesteps")
-    
-    #### test phase
-    mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(source_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 30percentage on source environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=False)
-    print(f"\nMean reward after 1000K timesteps and 30percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
-    source_env.reset_masses_ranges()
+    source_env.reset_masses_ranges() """
 
     source_env.close()
     target_env.close()
