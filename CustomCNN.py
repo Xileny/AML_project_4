@@ -25,6 +25,7 @@ import warnings
 from skimage import color, img_as_ubyte
 from skimage.transform import resize
 import warnings
+from stable_baselines3.common.callbacks import CheckpointCallback
 
 source_env = gym.make('CustomHopper-source-v0')
 target_env = gym.make('CustomHopper-target-v0')
@@ -416,29 +417,6 @@ stackframes_target_env.observation_space
 image_target_env = ImageToPyTorch(stackframes_target_env)
 image_target_env.observation_space
 
-# framestack_env = FrameStack(image_env, 4)
-# framestack_env.observation_space
-
-# framestack_obs = framestack_env.reset()
-# framestack_obs.shape
-
-# !pip install torchvision
-# from torchvision import models
-
-# alexnet = models.alexnet(pretrained=True)
-# print(alexnet)
-
-# from torchvision import transforms
-# transform = transforms.Compose([            #[1]
-#  transforms.Resize(256),                    #[2]
-#  transforms.CenterCrop(224),                #[3]
-#  transforms.ToTensor(),                     #[4]
-#  transforms.Normalize(                      #[5]
-#  mean=[0.485, 0.456, 0.406],                #[6]
-#  std=[0.229, 0.224, 0.225]                  #[7]
-#  )])
-
-
 class CustomCNN(BaseFeaturesExtractor):
     """
     :param observation_space: (gym.Space)
@@ -476,99 +454,21 @@ policy_kwargs = dict(
     features_extractor_kwargs=dict(features_dim=128),
 )
 
-# class CustomCNN(BaseFeaturesExtractor):
-#     """
-#     :param observation_space: (gym.Space)
-#     :param features_dim: (int) Number of features extracted.
-#         This corresponds to the number of unit for the last layer.
-#     """
-
-#     def __init__(self, observation_space: spaces.Box, features_dim: int = 256):
-#         super().__init__(observation_space, features_dim)
-#         # We assume CxHxW images (channels first)
-#         # Re-ordering will be done by pre-preprocessing or wrapper
-#         #print(observation_space.shape)
-        
-#         n_input_channels = 3 # observation_space.shape[2]
-#         #print(f"Number of channels: {n_input_channels}")
-#         self.cnn = nn.Sequential(
-#             nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
-#             nn.ReLU(),
-#             nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
-#             nn.ReLU(),
-#             nn.Flatten(),
-#         )
-
-#         #Compute shape by doing one forward pass
-#         with th.no_grad():
-#             n_flatten = self.cnn(
-#                 th.as_tensor(observation_space.sample()[0]).float()
-#             ).shape[1]
-
-#             print("ckpnt: "+ n_flatten)
-
-#         self.linear = nn.Sequential(nn.Linear(n_flatten, features_dim), nn.ReLU())
-
-#     def forward(self, observations: th.Tensor) -> th.Tensor:
-#         print(observations.shape())
-#         return self.linear(self.cnn(observations))
-
-# policy_kwargs = dict(
-#     features_extractor_class=CustomCNN,
-#     features_extractor_kwargs=dict(features_dim=128),
-# )
-
-# class CustomCombinedExtractor(BaseFeaturesExtractor):
-#     def __init__(self, observation_space: spaces.Dict):
-#         # We do not know features-dim here before going over all the items,
-#         # so put something dummy for now. PyTorch requires calling
-#         # nn.Module.__init__ before adding modules
-#         super().__init__(observation_space, features_dim=1)
-
-#         extractors = {}
-
-#         total_concat_size = 0
-#         # We need to know size of the output of this extractor,
-#         # so go over all the spaces and compute output feature sizes
-#         for key, subspace in observation_space.spaces.items():
-#             if key == "obs":
-#                 # We will just downsample one channel of the image by 4x4 and flatten.
-#                 # Assume the image is single-channel (subspace.shape[0] == 0)
-#                 extractors[key] = nn.Sequential(nn.MaxPool2d(4), nn.Flatten())
-#                 total_concat_size += subspace.shape[1] // 4 * subspace.shape[2] // 4
-#             elif key == "vector":
-#                 # Run through a simple MLP
-#                 extractors[key] = nn.Linear(subspace.shape[0], 16)
-#                 total_concat_size += 16
-
-#         self.extractors = nn.ModuleDict(extractors)
-
-#         # Update the features dim manually
-#         self._features_dim = total_concat_size
-
-#     def forward(self, observations) -> th.Tensor:
-#         encoded_tensor_list = []
-
-#         # self.extractors contain nn.Modules that do all the processing.
-#         for key, extractor in self.extractors.items():
-#             encoded_tensor_list.append(extractor(observations[key]))
-#         # Return a (B, self._features_dim) PyTorch tensor, where B is batch dimension.
-#         return th.cat(encoded_tensor_list, dim=1)
-
-# policy_kwargs = dict(
-#     features_extractor_class=CustomCombinedExtractor,
-#     features_extractor_kwargs=dict(features_dim=128),
-# )
-
-# customCnn = CustomCNN(framestack_env)
-#model = PPO("CnnPolicy", source_env, policy_kwargs, verbose=1)
+# Save a checkpoint every x steps
+checkpoint_callback = CheckpointCallback(
+  save_freq=25_000,
+  save_path="./logs/",
+  name_prefix="trpo_model_150k",
+  save_replay_buffer=True,
+  save_vecnormalize=True,
+)
 
 source_env.set_udr_flag(True, 30) 
-model = TRPO("MlpPolicy", image_env, policy_kwargs=policy_kwargs, verbose=1, batch_size=32, device="cpu")
-trained_model = model.learn(total_timesteps=200_000, progress_bar=True)
+model = TRPO("MlpPolicy", image_env, policy_kwargs=policy_kwargs, verbose=1, batch_size=32, device="cpu", learning_rate=0.0001)
+trained_model = model.learn(total_timesteps=150_000, progress_bar=True, callback=checkpoint_callback)
 source_env.set_udr_flag(False)
-mean_reward, std = evaluate_policy(trained_model, image_env, 50)
-print(f"TRPO 200K timesteps with udr 30% mass var, s2s: mean reward={mean_reward}, std={std}")
-mean_reward, std = evaluate_policy(trained_model, image_target_env, 50)
-print(f"TRPO 200K timesteps with udr 30% mass var, s2t: mean reward={mean_reward}, std={std}")
+mean_reward, std = evaluate_policy(trained_model, Monitor(image_env), 50)
+print(f"TRPO 150K timesteps with udr 30% mass var, s2s: mean reward={mean_reward}, std={std}")
+mean_reward, std = evaluate_policy(trained_model, Monitor(image_target_env), 50)
+print(f"TRPO 150K timesteps with udr 30% mass var, s2t: mean reward={mean_reward}, std={std}")
 source_env.reset_masses_ranges()
