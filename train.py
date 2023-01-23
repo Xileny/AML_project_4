@@ -259,9 +259,52 @@ def main():
     mean_reward, std_reward = evaluate_policy(modelPPO, Monitor(target_env), episodes, render=True)
     print(f"\nMean reward after 1000K timesteps and 10percentage on target environment after applying UDR during training using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
     source_env.reset_masses_ranges() """
+    
+    model = TRPO.load("./TRPO/TRPO 150K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
 
-    print("Prova")
+    model = TRPO.load("./TRPO/TRPO 100K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
 
+    model = TRPO.load("./TRPO/TRPO 50K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+    model = PPO.load("./PPO/PPO 200K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+    model = TRPO.load("./PPO/PPO 100K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+    
+    model = TRPO.load("./PPO/PPO 50K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using PPO: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+    model = TRPO.load("./TRPO/TRPO lr_3e-4 100K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO LR3E-4: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+    model = TRPO.load("./TRPO/TRPO lr_3e-4 50K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO LR3E-4: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+    model = TRPO.load("./TRPO/TRPO lr_3e-4 10K timesteps")
+    # Testa la policy sull'ambiente sorgente
+    mean_reward, std_reward = evaluate_policy(model, Monitor(target_env), 50)
+    print(f"Mean reward on source environment using TRPO LR3E-4: {mean_reward:.2f} +/- {std_reward:.2f}")
+    
     source_env.close()
     target_env.close()
 

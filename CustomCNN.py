@@ -458,17 +458,47 @@ policy_kwargs = dict(
 checkpoint_callback = CheckpointCallback(
   save_freq=25_000,
   save_path="./logs/",
-  name_prefix="trpo_model_150k",
+  name_prefix="trpo_model_lr_1e-2_150k",
   save_replay_buffer=True,
   save_vecnormalize=True,
 )
 
-source_env.set_udr_flag(True, 30) 
-model = TRPO("MlpPolicy", image_env, policy_kwargs=policy_kwargs, verbose=1, batch_size=32, device="cpu", learning_rate=0.0001)
+""" source_env.set_udr_flag(True, 30) 
+model = TRPO("MlpPolicy", image_env, policy_kwargs=policy_kwargs, verbose=1, batch_size=32, device="cpu", learning_rate=0.01)
 trained_model = model.learn(total_timesteps=150_000, progress_bar=True, callback=checkpoint_callback)
 source_env.set_udr_flag(False)
 mean_reward, std = evaluate_policy(trained_model, Monitor(image_env), 50)
-print(f"TRPO 150K timesteps with udr 30% mass var, s2s: mean reward={mean_reward}, std={std}")
+print(f"TRPO 150K timesteps with udr 30% mass var and lr=1-e2, s2s: mean reward={mean_reward}, std={std}")
 mean_reward, std = evaluate_policy(trained_model, Monitor(image_target_env), 50)
-print(f"TRPO 150K timesteps with udr 30% mass var, s2t: mean reward={mean_reward}, std={std}")
-source_env.reset_masses_ranges()
+print(f"TRPO 150K timesteps with udr 30% mass var and lr=1-e2, s2t: mean reward={mean_reward}, std={std}")
+source_env.reset_masses_ranges() """
+
+modelTRPO = TRPO.load("./logs/trpo_model_lr_1e-2_150k_25000_steps")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_env), 50)
+print(f"\nMean reward on source environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_target_env), 50)
+print(f"\nMean reward on target environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+
+modelTRPO = TRPO.load("./logs/trpo_model_lr_1e-2_150k_50000_steps")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_env), 50)
+print(f"\nMean reward on source environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_target_env), 50)
+print(f"\nMean reward on target environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+
+modelTRPO = TRPO.load("./logs/trpo_model_lr_1e-2_150k_75000_steps")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_env), 50)
+print(f"\nMean reward on source environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_target_env), 50)
+print(f"\nMean reward on target environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+
+modelTRPO = TRPO.load("./logs/trpo_model_lr_1e-2_150k_100000_steps")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_env), 50)
+print(f"\nMean reward on source environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_target_env), 50)
+print(f"\nMean reward on target environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+
+modelTRPO = TRPO.load("./logs/trpo_model_lr_1e-2_150k_125000_steps")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_env), 50)
+print(f"\nMean reward on source environment : {mean_reward:.2f} +/- {std_reward:.2f}")
+mean_reward, std_reward = evaluate_policy(modelTRPO, Monitor(image_target_env), 50)
+print(f"\nMean reward on target environment : {mean_reward:.2f} +/- {std_reward:.2f}")
