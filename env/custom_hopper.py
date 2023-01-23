@@ -8,8 +8,6 @@ import numpy as np
 import gym
 from gym import utils
 from .mujoco_env import MujocoEnv
-from scipy.stats import truncnorm
-
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
     
@@ -32,7 +30,6 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         """Set random masses
         TODO
         """
-        #print(f"\nCall set_random_parameters()!\n")
         self.set_parameters(self.sample_parameters())
 
     def sample_parameters(self):
@@ -40,11 +37,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         TODO
         """
         ############## UNIFORM DISTRIBUTION ##############
-        #### Is it correct to consider as ends the min and the max values of self.original_masses? It is a curious way but it should be ok
-        #### Anyway, try to apply to every single mass a uniform distribution considering the mass itself as the mean in the range
-        #min_mass, max_mass = min(self.original_masses[1:]), max(self.original_masses[1:]) 
         masses= [] 
-        #print("Original parameters: ", self.original_masses[1:])
         if(self.percentage_mass_variability > 99):
             self.percentage_mass_variability = 99
 
@@ -56,15 +49,10 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
                 i += 1
                 interval = [min_mass, max_mass]
                 self.masses_ranges.append(interval)
-                #print(f"self.masses_ranges: {self.masses_ranges}")
-                #print(f"Min and max masses: {min_mass} and {max_mass} considering mass {mass}")
                 
         for interval in self.masses_ranges:
             sampled_mass = np.random.uniform(interval[0], interval[1])
             masses.append(sampled_mass)
-            
-        #print("sample_parameters fn: ", masses)
-        #print("Body masses BEFORE: ", self.sim.model.body_mass)
 
         return masses
 
@@ -75,9 +63,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def set_parameters(self, task):
         """Set each hopper link's mass to a new value"""
-        #print("set_paramteres fn: ", task)
         self.sim.model.body_mass[2:] = task
-        #print("Body masses AFTER: ", self.sim.model.body_mass)
 
     def set_udr_flag(self, val=True, percentage_variability = 10):
         self.udr = val
@@ -118,10 +104,8 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         """Reset the environment to a random initial state"""
 
         if self.udr:
-            #print(f"Masses BEFORE: {self.sim.model.body_mass[2:]}")
-            ######### Is it correct to sample masses here? This method should be called after each episode --> YES
+            #This method should be called after each episode
             self.set_random_parameters()
-            #print(f"Masses AFTER: {self.sim.model.body_mass[2:]}\n")
 
         qpos = self.init_qpos + self.np_random.uniform(low=-.005, high=.005, size=self.model.nq)
         qvel = self.init_qvel + self.np_random.uniform(low=-.005, high=.005, size=self.model.nv)
